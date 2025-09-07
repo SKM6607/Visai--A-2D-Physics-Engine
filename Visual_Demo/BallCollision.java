@@ -20,7 +20,7 @@ public class BallCollision extends JPanel implements ActionListener {
     private Timer timer;
     private ArrayList<Ball> balls;
     private boolean isLocked = false;
-
+    private final ArrayList<int[]> curvePoints=new ArrayList<>();
     public BallCollision(int WIDTH, int HEIGHT, int BALLS, int GRID_SPACING) {
         {
             this.screenWidth = WIDTH;
@@ -144,9 +144,12 @@ public class BallCollision extends JPanel implements ActionListener {
         for (int i = 0; i <= screenHeight ; i += gridSpacing) {
             g2.drawLine(0, i, screenWidth, i);
         }
+        g2.setStroke(new BasicStroke(5f));
+        drawCurve(g2,screenWidth-500,screenHeight-100,100,1,g.getColor());
         for (Ball b : balls) {
             b.draw(g);
         }
+
     }
 
     @Override
@@ -157,10 +160,25 @@ public class BallCollision extends JPanel implements ActionListener {
         checkCollisions();
         repaint();
     }
-
+    private void simulatePixel(Graphics2D g,int x,int y){
+        g.drawLine(x,y,x,y);
+    }
+    private void drawCurve(Graphics2D g,int xShift,int yShift,int Amplitude,int widthFactor,Color color){
+        float max= (float) (Math.PI/2);
+        int x=0;
+        g.setColor(Color.WHITE);
+        for (float i = 0; i < max; i+=0.01f) {
+            int sinVal=yShift+(int) (Amplitude*Math.sin(widthFactor*(i/0.5f)));
+            simulatePixel(g,xShift+(x), sinVal);
+            curvePoints.add(new int[]{xShift+x,sinVal});
+            x++;
+        }
+        g.setColor(color);
+    }
     // Handle collisions between balls
     private void checkCollisions() {
         for (Ball ball : balls) {
+
             for (Ball otherBall : balls) {
                 if (ball != otherBall) {
                     Ball a = ball;
@@ -267,7 +285,6 @@ public class BallCollision extends JPanel implements ActionListener {
             this.color = color;
             this.gravity = new Vector2D(0, 0.99f);
         }
-
         void setColor(Color color) {
             this.color = color;
         }
@@ -297,10 +314,19 @@ public class BallCollision extends JPanel implements ActionListener {
                 velocity.negateY();
             }
         }
-
         void draw(Graphics g) {
             g.setColor(color);
             g.fillOval((int) (x - radius), (int) (y - radius), radius * 2, radius * 2);
         }
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(()->{
+            JFrame jFrame=new JFrame("Ball Collision");
+            jFrame.add(new BallCollision(1500,800,10,25));
+            jFrame.setSize(1500,800);
+            jFrame.setVisible(true);
+            jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        });
     }
 }

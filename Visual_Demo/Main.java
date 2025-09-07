@@ -1,10 +1,10 @@
-import Visual_Demo.*;
+package Visual_Demo;
 
 import javax.swing.*;
 import java.awt.*;
 
 public class Main extends JFrame {
-    private static final int HEIGHT=1000,WIDTH=1800;
+    private static final int HEIGHT=800,WIDTH=1800;
     private static final int RADIUS=30;
     private static final int LENGTH=200;
     Dimension size=new Dimension(WIDTH,HEIGHT);
